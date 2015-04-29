@@ -2,6 +2,7 @@
 
 namespace Caspio;
 use Caspio\Tokens\AccessToken as AccessToken;
+use \Httpful\Request as Request;
 
 class Caspio
 {
@@ -9,7 +10,7 @@ class Caspio
 
     public function __construct($access_token)
     {   
-        $this->access_token = $this->setAccessToken($access_token);
+        $this->setAccessToken($access_token);
     }
 
     public function setAccessToken($access_token)
@@ -30,14 +31,9 @@ class Caspio
     {
         $url = sprintf($rest_url.$table.'/rows?q=%s', urlencode(json_encode(array('where'=>'PK_ID = '.$id))));
         $response = Request::get($url)
-            ->body(http_build_query($body))
             ->addHeader('Authorization','Bearer '.$this->access_token)
             ->send();
 
-        if (!empty($response->body)) {
-            return $response->body;
-        } else {
-            return $response->status;
-        }
+        return $response;
     }
 }

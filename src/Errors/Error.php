@@ -1,7 +1,8 @@
 <?php
 namespace Caspio\Errors;
 
-class Errors {
+class Error
+{
 	/**
 	 * Stores the list of errors.
 	 *
