@@ -31,7 +31,7 @@
     "minimum-stability": "dev",
     "autoload": {
         "psr-4": {
-            "rxnlabs\\Caspio\\": "vendor/rxnlabs/caspio/src/"
+            "Caspio\\": "src/"
         }
     }
 }
