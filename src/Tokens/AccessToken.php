@@ -31,7 +31,8 @@ class AccessToken
         }
 
         if (empty($client_id) || empty($client_secret) || empty($oauth_path)) {
-            return new Error(404, 'Missing arguments $client_id, $client_secret, $oauth_path');
+            $error = new Error(404, 'Missing arguments $client_id, $client_secret, $oauth_path');
+            return $error->get_error_code();
         }
 
         $body = array('grant_type'=>'client_credentials','client_id'=>$client_id,'client_secret'=>$client_secret);
@@ -41,7 +42,8 @@ class AccessToken
         if ($response->code == 200) {
             return $response->body;
         } else {
-            return new Error(404, 'Missing arguments $client_id, $client_secret, $oauth_path');
+            $error = new Error(404, 'Missing arguments $client_id, $client_secret, $oauth_path');
+            return $error->get_error_code();
         }
     }
 
@@ -56,7 +58,8 @@ class AccessToken
         }
 
         if (empty($refresh_token) || empty($refresh_url)) {
-            throw new Error('Missing arguments $refresh_token and $refresh_url', 404);
+            $error = new Error(404, 'Missing arguments $refresh_token and $refresh_url');
+            return $error->get_error_code();
         }
 
         $body = array('grant_type'=>'refresh_token','refresh_token'=>$refresh_token);
@@ -72,7 +75,7 @@ class AccessToken
         }
     }
 
-    public function testAccessToken($tables_url = '', $access_token = '')
+    public function isAccessTokenValid($tables_url = '', $access_token = '')
     {
         if (empty($access_token)) {
             $access_token = $this->access_token;
@@ -83,7 +86,8 @@ class AccessToken
         }
 
         if (empty($access_token) || empty($tables_url)) {
-            throw new Error('Missing arguments $access_token and $tables_url', 404);
+            $error = new Error(404, 'Missing arguments $access_token and $tables_url');
+            return $error->get_error_code();
         }
 
         $response = Request::get($tables_url)
@@ -91,7 +95,7 @@ class AccessToken
             ->send();
 
         if ($response->code == 200) {
-            return $access_token;
+            return true;
         } else {
             return false;
         }
