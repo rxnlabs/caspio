@@ -1,6 +1,6 @@
 {
     "name": "rxnlabs/caspio",
-    "description": "A PHP Library to access and use the Caspio REST API",
+    "description": "A un-official PHP Library to access and use the Caspio REST API",
     "require": {
         "php": ">=5.3.0",
         "nategood/httpful": "*@dev"
