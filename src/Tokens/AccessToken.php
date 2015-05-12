@@ -40,6 +40,8 @@ class AccessToken
             ->body(http_build_query($body))
             ->send();
         if ($response->code == 200) {
+            $this->access_token = $response->body->access_token;
+            $this->refresh_token = $response->body->refresh_token;
             return $response->body;
         } else {
             $error = new Error(404, 'Missing arguments $client_id, $client_secret, $oauth_path');

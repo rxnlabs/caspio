@@ -28,7 +28,7 @@ class Caspio
         $response_type = strtolower($response_type);
         switch ($response_type) {
             case 'xml': 
-                $this->response_format_header = 'application/xml'
+                $this->response_format_header = 'application/xml';
                 break;
             case 'json':
                 $this->response_format_header = 'application/json';
