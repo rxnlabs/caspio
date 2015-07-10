@@ -1,3 +1,6 @@
 .DS_Store
 composer.lock
 vendor/
+tests/files/
+*.sublime-project
+*.sublime-workspace

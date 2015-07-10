@@ -2,16 +2,44 @@
 
 namespace Caspio;
 use Caspio\Tokens\AccessToken as AccessToken;
-use \Httpful\Request as Request;
 
 class Caspio
 {
     public $access_token;
     public $response_format_header = 'application/json';
+    public $http_adapter;
+    public $oauth_headers;
 
     public function __construct($access_token)
     {   
         $this->setAccessToken($access_token);
+        $this->oauth_headers = array(
+            'Authorization'=>'Bearer '.$this->access_token
+            );
+    }
+
+    /**
+     * Set the HTTP Adapter
+     * 
+     * Set the type of HTTP adapter we're using
+     * 
+     * @return void
+     */
+    public function setHTTPAdapter(HTTPInterface $adapter)
+    {
+        $this->http_adapter = $adapter;
+    }
+
+    /**
+     * Get the HTTP Adapter
+     * 
+     * Get the type of HTTP Adaptor being used
+     * 
+     * @return HTTPInterface adapter
+     */
+    public function getHTTPAdapter()
+    {
+        return $this->http_adapter;
     }
 
     public function setAccessToken($access_token)
@@ -21,6 +49,8 @@ class Caspio
         } else {
             $this->access_token = $access_token;
         }
+
+        $this->oauth_headers['Authorization'] = 'Bearer '.$this->access_token;
     }
 
     public function setReponseFormat($response_type)
@@ -37,6 +67,8 @@ class Caspio
                 $this->response_format_header = 'application/json';
                 break;
         }
+
+        $this->oauth_headers['Accept'] = $this->response_format_header;
     }
 
     public function testAPIAccessToken($access_token = '')
@@ -51,6 +83,11 @@ class Caspio
             ->addHeader('Authorization','Bearer '.$this->access_token)
             ->addHeader('Accept', $this->response_format_header)
             ->send();
+        $request_params = array(
+                'url'=>$url,
+                'headers'=>$oauth_headers
+            );
+        $reponse = $this->getHTTPAdapter()->getRequest($request_params);
 
         return $response;
     }
