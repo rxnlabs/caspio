@@ -12,7 +12,8 @@ class AccessToken
     public $caspio_tables_url;
     public $access_token;
     public $refresh_token;
-
+    public $http_adapter;
+    
     public function __construct($oauth_path = '', $client_id = '' , $client_secret = '')
     {
         if (!empty($oauth_path) || !empty($client_id) || !empty($client_secret)) {
@@ -20,6 +21,30 @@ class AccessToken
             $this->client_secret = $client_secret;
             $this->oauth_path = $oauth_path;
         }
+    }
+
+    /**
+     * Set the HTTP Adapter
+     * 
+     * Set the type of HTTP adapter we're using
+     * 
+     * @return void
+     */
+    public function setHTTPAdapter(HTTPInterface $adapter)
+    {
+        $this->http_adapter = $adapter;
+    }
+
+    /**
+     * Get the HTTP Adapter
+     * 
+     * Get the type of HTTP Adaptor being used
+     * 
+     * @return HTTPInterface adapter
+     */
+    public function getHTTPAdapter()
+    {
+        return $this->http_adapter;
     }
 
     public function createAccessToken($oauth_path = '', $client_id = '', $client_secret = '')
@@ -37,11 +62,16 @@ class AccessToken
 
         $body = array('grant_type'=>'client_credentials');
         $encode_creds = base64_encode(sprintf('%1$s:%2$s', $client_id, $client_secret));
-        $response = Request::post($oauth_path)
-            ->addHeader('Content-Type','application/x-www-form-urlencoded')
-            ->addHeader('Authorization','Basic '.$encode_creds)
-            ->body(http_build_query($body))
-            ->send();
+        $headers = array(
+            'Authorization'=>'Basic '.$encode_creds,
+            'Content-type'=>'application/x-www-form-urlencoded'
+            );
+        $request_params = array(
+                'url'=>$oauth_path,
+                'headers'=>$headers
+            );
+        $response = $this->getHTTPAdapter()->getRequest($request_params);
+
         if ($response->code == 200) {
             $this->access_token = $response->body->access_token;
             $this->refresh_token = $response->body->refresh_token;
@@ -77,11 +107,17 @@ class AccessToken
 
         $body = array('grant_type'=>'refresh_token','refresh_token'=>$refresh_token);
         $encode_creds = base64_encode(sprintf('%1$s:%2$s', $client_id, $client_secret));
-        $response = Request::post($refresh_url)
-            ->addHeader('Content-Type','application/x-www-form-urlencoded')
-            ->addHeader('Authorization','Basic '.$encode_creds)
-            ->body(http_build_query($body))
-            ->send();
+        $headers = array(
+            'Authorization'=>'Basic '.$encode_creds,
+            'Content-type'=>'application/x-www-form-urlencoded'
+            );
+
+        $request_params = array(
+                'url'=>$oauth_path,
+                'headers'=>$headers,
+                'body'=>$body
+            );
+        $response = $this->getHTTPAdapter()->postRequest($request_params);
 
         if ($response->code == 200) {
             $this->access_token = $response->body->access_token;
@@ -103,9 +139,14 @@ class AccessToken
             return $error->get_error_code();
         }
 
-        $response = Request::get($tables_url)
-            ->addHeader('Authorization','Bearer '.$access_token)
-            ->send();
+        $headers = array('Authorization'=>'Bearer '.$access_token);
+
+        $request_params = array(
+            'url'=>$tables_url,
+            'headers'=>$headers,
+            'body'=>$body
+            );
+        $response = $this->getHTTPAdapter()->getRequest($request_params);
 
         if ($response->code == 200) {
             return true;

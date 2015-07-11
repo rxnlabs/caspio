@@ -42,10 +42,25 @@ class Caspio
         return $this->http_adapter;
     }
 
-    public function setAccessToken($access_token)
+    /**
+     * Set the access token for this instance of Caspio client
+     * 
+     * @param string|Caspio\Tokens\AccessToken An access token for the Caspio API or an instance of the Caspio\Tokens\AccessToken class which has an access token
+     */
+    public function setAccessToken($token)
     {
         if ($access_token instanceof AccessToken) {
-            $this->access_token = $access_token->access_token;
+
+            if (!empty($token->access_token)) {
+                $this->access_token = $token->access_token;
+            } else {
+                $token->createAccessToken();
+                $this->access_token = $token->access_token;
+            }
+
+            if (!$this->http_adapter instanceof HTTPInterface && $token->http_adapter instanceof HTTPInterface) {
+                $this->setHTTPAdapter($token->http_adapter);
+            }
         } else {
             $this->access_token = $access_token;
         }
@@ -85,9 +100,9 @@ class Caspio
             ->send();
         $request_params = array(
                 'url'=>$url,
-                'headers'=>$oauth_headers
+                'headers'=>$this->oauth_headers
             );
-        $reponse = $this->getHTTPAdapter()->getRequest($request_params);
+        $response = $this->getHTTPAdapter()->getRequest($request_params);
 
         return $response;
     }

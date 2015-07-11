@@ -50,5 +50,5 @@ interface HTTPInterface
      * 
      * @return array A formatted response with the neccessary information to parse the result of the request
      */
-    
+    public function formatResponse($response);
 }

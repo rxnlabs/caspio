@@ -40,7 +40,7 @@ class Httpful implements HTTPInterface
             ->addHeaders($headers)
             ->send();
 
-        return $request;
+        return $this->formatResponse($request);
     }
 
     public function postRequest(array $request_params)
@@ -67,6 +67,8 @@ class Httpful implements HTTPInterface
                 ->addHeaders($headers)
                 ->send();
         }
+
+        return $this->formatResponse($request);
     }
 
     public function putRequest(array $request_params)
@@ -93,6 +95,8 @@ class Httpful implements HTTPInterface
                 ->addHeaders($headers)
                 ->send();
         }
+
+        return $this->formatResponse($request);
     }
 
     public function deleteRequest(array $request_params)
@@ -109,18 +113,43 @@ class Httpful implements HTTPInterface
 
         extract($request_params);
 
-        $request = \Httpful\Request::delete($url)
-            ->addHeaders($headers)
-            ->send();
+        if (array_key_exists('body', $request_params)) {
+            $request = \Httpful\Request::delete($url)
+                ->addHeaders($headers)
+                ->body($body)
+                ->send();
+        } else {
+            $request = \Httpful\Request::delete($url)
+                ->addHeaders($headers)
+                ->send();
+        }
+
+        return $this->formatResponse($request);
     }
 
     /**
      * Format the request from the HTTP library into a consistent format
      * 
+     * Each HTTP Adapter response should return the body, headers, HTTP status code, and the actual response object from the HTTP library in case the client wants to use the response directly in their implementation.
+     * 
      * @return array A formatted request with the neccessary information to parse the result of the request
      */
-    public function formatrequest($request)
+    public function formatResponse($request)
     {
+        $response = new \stdClass();
 
+        if ($request->hasBody()) {
+            $response->body = $request->body;
+        }
+
+        if ($request->hasErrors()) {
+            $response->error = true;
+        }
+        $response->status = $request->code;
+        $response->headers = $request->headers;
+
+        $response->adapter = $request;
+
+        return $response;
     }
 }
