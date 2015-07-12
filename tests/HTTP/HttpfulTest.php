@@ -39,7 +39,7 @@ class HttpfulTest extends PHPUnit_Framework_TestCase
      */
     public function testConnectionException()
     {
-        throw new Httpful\Exception\ConnectionErrorException;
+        throw new \Httpful\Exception\ConnectionErrorException;
     }
 
     /**
@@ -50,7 +50,7 @@ class HttpfulTest extends PHPUnit_Framework_TestCase
     public function testGetRequestPass($url)
     {
         $adapter = new Caspio\HTTP\Httpful;
-        $request_params = array('url'=>$url, 'headers'=>array('foo'=>'bar'));
+        $request_params = array('url'=>$url, 'header'=>array('foo'=>'bar'));
         $request = $adapter->getRequest($request_params);
         $message = sprintf('Request to %s not successful', $url);
         $message2 = sprintf('Request to %1$s did not return an instance of class %2$s', $url, '\Httpful\Response');
@@ -64,13 +64,37 @@ class HttpfulTest extends PHPUnit_Framework_TestCase
      * @dataProvider providerTestURLRequestFail
      * @expectedException Httpful\Exception\ConnectionErrorException
      */
-    public function testGetRequestFail($url)
+    public function testGetRequestFailBadURL($url)
     {
         $adapter = new Caspio\HTTP\Httpful;
-        $request_params = array('url'=>$url, 'headers'=>array('foo'=>'bar'));
+        $request_params = array('url'=>$url, 'header'=>array('foo'=>'bar'));
         $request = $adapter->getRequest($request_params);
         $message = sprintf('Able to connect to %s, change the fake URL to something different', $url);
-        $this->assertInstanceOf('Httpful\Exception\ConnectionErrorException', $request, $message);
+        $this->assertInstanceOf('\Httpful\Exception\ConnectionErrorException', $request, $message);
+    }
+
+    /**
+     * @expectedException Caspio\Exception\MissingParamException
+     */
+    public function testGetRequestFailNoURL()
+    {
+        $adapter = new Caspio\HTTP\Httpful;
+        $request_params = array('header'=>array('foo'=>'bar'));
+        $request = $adapter->getRequest($request_params);
+        $this->assertInstanceOf('\Caspio\Exception\MissingParamException', $request, 'An instance of Caspio\Exception\MissingParamException was not thrown');
+    }
+
+    /**
+     * @dataProvider providerTestURLRequestPass
+     * @expectedException Caspio\Exception\MissingParamException
+     */
+    public function testGetRequestFailNoHeader($url)
+    {
+        $adapter = new Caspio\HTTP\Httpful;
+        $request_params = array('url'=>$url);
+        $request = $adapter->getRequest($request_params);
+        $message = sprintf('An instance of Caspio\Exception\MissingParamException was not thrown when requesting %s without specifying the headers to pass', $url);
+        $this->assertInstanceOf('\Caspio\Exception\MissingParamException', $request, $message);
     }
 
     /**
@@ -81,7 +105,7 @@ class HttpfulTest extends PHPUnit_Framework_TestCase
     public function testPostRequestPass($url)
     {
         $adapter = new Caspio\HTTP\Httpful;
-        $request_params = array('url'=>$url, 'headers'=>array('foo'=>'bar'));
+        $request_params = array('url'=>$url, 'header'=>array('foo'=>'bar'));
         $request = $adapter->postRequest($request_params);
         $message = sprintf('Request to %s not successful', $url);
         $message2 = sprintf('Request to %1$s did not return an instance of class %2$s', $url, '\Httpful\Response');
@@ -95,13 +119,37 @@ class HttpfulTest extends PHPUnit_Framework_TestCase
      * @dataProvider providerTestURLRequestFail
      * @expectedException Httpful\Exception\ConnectionErrorException
      */
-    public function testPostRequestFail($url)
+    public function testPostRequestFailBadURL($url)
     {
         $adapter = new Caspio\HTTP\Httpful;
-        $request_params = array('url'=>$url, 'headers'=>array('foo'=>'bar'));
+        $request_params = array('url'=>$url, 'header'=>array('foo'=>'bar'));
         $request = $adapter->postRequest($request_params);
         $message = sprintf('Able to connect to %s, change the fake URL to something different', $url);
         $this->assertInstanceOf('Httpful\Exception\ConnectionErrorException', $request, $message);
+    }
+
+    /**
+     * @expectedException Caspio\Exception\MissingParamException
+     */
+    public function testPostRequestFailNoURL()
+    {
+        $adapter = new Caspio\HTTP\Httpful;
+        $request_params = array('header'=>array('foo'=>'bar'));
+        $request = $adapter->postRequest($request_params);
+        $this->assertInstanceOf('\Caspio\Exception\MissingParamException', $request, 'An instance of Caspio\Exception\MissingParamException was not thrown');
+    }
+
+    /**
+     * @dataProvider providerTestURLRequestPass
+     * @expectedException Caspio\Exception\MissingParamException
+     */
+    public function testPostRequestFailNoHeader($url)
+    {
+        $adapter = new Caspio\HTTP\Httpful;
+        $request_params = array('url'=>$url);
+        $request = $adapter->postRequest($request_params);
+        $message = sprintf('An instance of Caspio\Exception\MissingParamException was not thrown when requesting %s without specifying the headers to pass', $url);
+        $this->assertInstanceOf('\Caspio\Exception\MissingParamException', $request, $message);
     }
 
     /**
@@ -112,7 +160,7 @@ class HttpfulTest extends PHPUnit_Framework_TestCase
     public function testPutRequestPass($url)
     {
         $adapter = new Caspio\HTTP\Httpful;
-        $request_params = array('url'=>$url, 'headers'=>array('foo'=>'bar'));
+        $request_params = array('url'=>$url, 'header'=>array('foo'=>'bar'));
         $request = $adapter->putRequest($request_params);
         $message = sprintf('Request to %s not successful', $url);
         $message2 = sprintf('Request to %1$s did not return an instance of class %2$s', $url, '\Httpful\Response');
@@ -126,13 +174,37 @@ class HttpfulTest extends PHPUnit_Framework_TestCase
      * @dataProvider providerTestURLRequestFail
      * @expectedException Httpful\Exception\ConnectionErrorException
      */
-    public function testPutRequestFail($url)
+    public function testPutRequestFailBadURL($url)
     {
         $adapter = new Caspio\HTTP\Httpful;
-        $request_params = array('url'=>$url, 'headers'=>array('foo'=>'bar'));
+        $request_params = array('url'=>$url, 'header'=>array('foo'=>'bar'));
         $request = $adapter->putRequest($request_params);
         $message = sprintf('Able to connect to %s, change the fake URL to something different', $url);
         $this->assertInstanceOf('Httpful\Exception\ConnectionErrorException', $request, $message);
+    }
+
+    /**
+     * @expectedException Caspio\Exception\MissingParamException
+     */
+    public function testPutRequestFailNoURL()
+    {
+        $adapter = new Caspio\HTTP\Httpful;
+        $request_params = array('header'=>array('foo'=>'bar'));
+        $request = $adapter->putRequest($request_params);
+        $this->assertInstanceOf('\Caspio\Exception\MissingParamException', $request, 'An instance of Caspio\Exception\MissingParamException was not thrown');
+    }
+
+    /**
+     * @dataProvider providerTestURLRequestPass
+     * @expectedException Caspio\Exception\MissingParamException
+     */
+    public function testPutRequestFailNoHeader($url)
+    {
+        $adapter = new Caspio\HTTP\Httpful;
+        $request_params = array('url'=>$url);
+        $request = $adapter->putRequest($request_params);
+        $message = sprintf('An instance of Caspio\Exception\MissingParamException was not thrown when requesting %s without specifying the headers to pass', $url);
+        $this->assertInstanceOf('\Caspio\Exception\MissingParamException', $request, $message);
     }
 
     /**
@@ -143,7 +215,7 @@ class HttpfulTest extends PHPUnit_Framework_TestCase
     public function testDeleteRequestPass($url)
     {
         $adapter = new Caspio\HTTP\Httpful;
-        $request_params = array('url'=>'https://www.yahoo.com', 'headers'=>array('foo'=>'bar'));
+        $request_params = array('url'=>'https://www.yahoo.com', 'header'=>array('foo'=>'bar'));
         $request = $adapter->deleteRequest($request_params);
         $message = sprintf('Request to %s not successful', $url);
         $message2 = sprintf('Request to %1$s did not return an instance of class %2$s', $url, '\Httpful\Response');
@@ -157,13 +229,37 @@ class HttpfulTest extends PHPUnit_Framework_TestCase
      * @dataProvider providerTestURLRequestFail
      * @expectedException Httpful\Exception\ConnectionErrorException
      */
-    public function testDeleteRequestFail($url)
+    public function testDeleteRequestFailBadURL($url)
     {
         $adapter = new Caspio\HTTP\Httpful;
-        $request_params = array('url'=>$url, 'headers'=>array('foo'=>'bar'));
+        $request_params = array('url'=>$url, 'header'=>array('foo'=>'bar'));
         $request = $adapter->deleteRequest($request_params);
         $message = sprintf('Able to connect to %s, change the fake URL to something different', $url);
         $this->assertInstanceOf('Httpful\Exception\ConnectionErrorException', $request, $message);
+    }
+
+    /**
+     * @expectedException Caspio\Exception\MissingParamException
+     */
+    public function testDeleteRequestFailNoURL()
+    {
+        $adapter = new Caspio\HTTP\Httpful;
+        $request_params = array('header'=>array('foo'=>'bar'));
+        $request = $adapter->deleteRequest($request_params);
+        $this->assertInstanceOf('\Caspio\Exception\MissingParamException', $request, 'An instance of Caspio\Exception\MissingParamException was not thrown');
+    }
+
+    /**
+     * @dataProvider providerTestURLRequestPass
+     * @expectedException Caspio\Exception\MissingParamException
+     */
+    public function testDeleteRequestFailNoHeader($url)
+    {
+        $adapter = new Caspio\HTTP\Httpful;
+        $request_params = array('url'=>$url);
+        $request = $adapter->deleteRequest($request_params);
+        $message = sprintf('An instance of Caspio\Exception\MissingParamException was not thrown when requesting %s without specifying the headers to pass', $url);
+        $this->assertInstanceOf('\Caspio\Exception\MissingParamException', $request, $message);
     }
 
 }

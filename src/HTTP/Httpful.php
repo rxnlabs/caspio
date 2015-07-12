@@ -1,15 +1,15 @@
 <?php
 
 namespace Caspio\HTTP;
+use \Caspio\Exception\AdapterErrorException as AdapterErrorException;
+use \Caspio\Exception\MissingParamException as MissingParamException;
 
 class Httpful implements HTTPInterface
 {   
-
-    public $instance;
     /**
-     * Verify the Httpful class is loaded
+     * Verify the Httpful library is loaded
      * 
-     * @return bool True if class exist or Exception if the class does not exist
+     * @return void
      */
     public function classExists()
     {
@@ -22,22 +22,33 @@ class Httpful implements HTTPInterface
         return true;
     }
 
+    /**
+     * Verify the array keys are included when making a request.
+     * 
+     * Array keys need to be passed before we're able to make a request to the API.
+     * 
+     * @return void
+     */
+    public function verifyRequestKeys(array $request_params)
+    {
+        if (!array_key_exists('url', $request_params) || empty($request_params['url'])) {
+            throw new MissingParamException('Missing array key "url" in the parameter $request_params');
+        }
+
+        if (!array_key_exists('header', $request_params) || empty($request_params['header'])) {
+            throw new MissingParamException('Missing array key "header" in the parameter $request_params');
+        }
+    }
+
     public function getRequest(array $request_params)
     {
         $this->classExists();
-
-        if (!array_key_exists('url', $request_params)) {
-
-        }
-
-        if (!array_key_exists('headers', $request_params)) {
-
-        }
+        $this->verifyRequestKeys($request_params);
 
         extract($request_params);
 
         $request = \Httpful\Request::get($url)
-            ->addHeaders($headers)
+            ->addHeaders($header)
             ->send();
 
         return $this->formatResponse($request);
@@ -46,25 +57,18 @@ class Httpful implements HTTPInterface
     public function postRequest(array $request_params)
     {
         $this->classExists();
-        
-        if (!array_key_exists('url', $request_params)) {
-
-        }
-
-        if (!array_key_exists('headers', $request_params)) {
-
-        }
+        $this->verifyRequestKeys($request_params);
 
         extract($request_params);
 
         if (array_key_exists('body', $request_params)) {
             $request = \Httpful\Request::post($url)
-                ->addHeaders($headers)
+                ->addHeaders($header)
                 ->body($body)
                 ->send();
         } else {
             $request = \Httpful\Request::post($url)
-                ->addHeaders($headers)
+                ->addHeaders($header)
                 ->send();
         }
 
@@ -74,25 +78,18 @@ class Httpful implements HTTPInterface
     public function putRequest(array $request_params)
     {
         $this->classExists();
-        
-        if (!array_key_exists('url', $request_params)) {
-
-        }
-
-        if (!array_key_exists('headers', $request_params)) {
-
-        }
+        $this->verifyRequestKeys($request_params);
 
         extract($request_params);
 
         if (array_key_exists('body', $request_params)) {
             $request = \Httpful\Request::put($url)
-                ->addHeaders($headers)
+                ->addHeaders($header)
                 ->body($body)
                 ->send();
         } else {
             $request = \Httpful\Request::put($url)
-                ->addHeaders($headers)
+                ->addHeaders($header)
                 ->send();
         }
 
@@ -102,25 +99,18 @@ class Httpful implements HTTPInterface
     public function deleteRequest(array $request_params)
     {
         $this->classExists();
-        
-        if (!array_key_exists('url', $request_params)) {
-
-        }
-
-        if (!array_key_exists('headers', $request_params)) {
-
-        }
+        $this->verifyRequestKeys($request_params);
 
         extract($request_params);
 
         if (array_key_exists('body', $request_params)) {
             $request = \Httpful\Request::delete($url)
-                ->addHeaders($headers)
+                ->addHeaders($header)
                 ->body($body)
                 ->send();
         } else {
             $request = \Httpful\Request::delete($url)
-                ->addHeaders($headers)
+                ->addHeaders($header)
                 ->send();
         }
 
@@ -145,9 +135,9 @@ class Httpful implements HTTPInterface
         if ($request->hasErrors()) {
             $response->error = true;
         }
+
         $response->status = $request->code;
         $response->headers = $request->headers;
-
         $response->adapter = $request;
 
         return $response;

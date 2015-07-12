@@ -2,6 +2,6 @@
 
 namespace Caspio\Exception;
 
-class AdapterErrorException extends Exception
+class AdapterErrorException extends \Exception
 {
 }
