@@ -49,7 +49,7 @@ class Caspio
      */
     public function setAccessToken($token)
     {
-        if ($access_token instanceof AccessToken) {
+        if ($token instanceof AccessToken) {
 
             if (!empty($token->access_token)) {
                 $this->access_token = $token->access_token;
@@ -62,7 +62,7 @@ class Caspio
                 $this->setHTTPAdapter($token->http_adapter);
             }
         } else {
-            $this->access_token = $access_token;
+            $this->access_token = $token;
         }
 
         $this->oauth_headers['Authorization'] = 'Bearer '.$this->access_token;
