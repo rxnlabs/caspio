@@ -4,14 +4,6 @@ namespace Caspio\HTTP;
 
 interface HTTPInterface
 {
-    /**
-     * Verify the existence of the HTTP Library class
-     * 
-     * Before you're able to use the HTTP class to make requests, verify that the needed class exists.
-     * 
-     * @return bool|Error If the class exists, return true. Otherwise, throw a Fatal error
-     */
-    public function classExists();
 
     /**
      * Make a HTTP GET request to the API endpoint

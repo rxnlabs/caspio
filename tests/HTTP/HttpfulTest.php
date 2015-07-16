@@ -22,18 +22,6 @@ class HttpfulTest extends PHPUnit_Framework_TestCase
             );
     }
 
-    public function testAdapterExist()
-    {
-        $adapter = new Caspio\HTTP\Httpful;
-        $this->assertTrue($adapter->classExists(), 'Httpful library exists');
-    }
-
-    public function testAdapterExistFail()
-    {
-        $adapter = new Caspio\HTTP\Httpful;
-        $this->assertTrue($adapter->classExists(), 'Httpful library exists');
-    }
-
     /**
      * @expectedException Httpful\Exception\ConnectionErrorException
      */

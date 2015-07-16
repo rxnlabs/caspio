@@ -2,6 +2,7 @@
 
 namespace Caspio;
 use Caspio\Tokens\AccessToken as AccessToken;
+use Caspio\HTTP\HTTPInterface as HTTPInterface;
 
 class Caspio
 {

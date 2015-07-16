@@ -4,20 +4,28 @@ namespace Caspio\HTTP;
 use \Caspio\Exception\AdapterErrorException as AdapterErrorException;
 use \Caspio\Exception\MissingParamException as MissingParamException;
 
-class Httpful implements HTTPInterface
+class Guzzle implements HTTPInterface
 {   
+
     /**
-     * Verify the Httpful library is loaded
+     * Instance of the GuzzleHttp Client class
+     */
+    public $client;
+
+    /**
+     * Verify the GuzzleHttp Client library is loaded
      * 
      * @return void
      */
     public function __construct()
     {
-        $exist = class_exists('\Httpful\Httpful');
+        $exist = class_exists('\GuzzleHttp\Client');
 
         if ($exist === false) {
-            throw new AdapterErrorException('Cannot find the class Httpful in the namespace Httpful. Please make sure this class is loaded before using this adapter.');
+            throw new AdapterErrorException('Cannot find the class Client in the namespace GuzzleHttp. Please make sure this class is loaded before using this adapter.');
         }
+
+        $this->client = new Guzzle\Client();
     }
 
     /**
@@ -44,9 +52,7 @@ class Httpful implements HTTPInterface
 
         extract($request_params);
 
-        $request = \Httpful\Request::get($url)
-            ->addHeaders($header)
-            ->send();
+        $request = $this->client->get($url, ['headers'=>$headers]);
 
         return $this->formatResponse($request);
     }
@@ -58,14 +64,9 @@ class Httpful implements HTTPInterface
         extract($request_params);
 
         if (array_key_exists('body', $request_params)) {
-            $request = \Httpful\Request::post($url)
-                ->addHeaders($header)
-                ->body($body)
-                ->send();
+            $request = $this->client->post($url, ['headers'=>$headers, 'body'=>$body]);
         } else {
-            $request = \Httpful\Request::post($url)
-                ->addHeaders($header)
-                ->send();
+            $request = $this->client->post($url, ['headers'=>$headers]);
         }
 
         return $this->formatResponse($request);
@@ -78,14 +79,9 @@ class Httpful implements HTTPInterface
         extract($request_params);
 
         if (array_key_exists('body', $request_params)) {
-            $request = \Httpful\Request::put($url)
-                ->addHeaders($header)
-                ->body($body)
-                ->send();
+            $request = $this->client->put($url, ['headers'=>$headers, 'body'=>$body]);
         } else {
-            $request = \Httpful\Request::put($url)
-                ->addHeaders($header)
-                ->send();
+            $request = $this->client->put($url, ['headers'=>$headers]);
         }
 
         return $this->formatResponse($request);
@@ -98,14 +94,9 @@ class Httpful implements HTTPInterface
         extract($request_params);
 
         if (array_key_exists('body', $request_params)) {
-            $request = \Httpful\Request::delete($url)
-                ->addHeaders($header)
-                ->body($body)
-                ->send();
+            $request = $this->client->delete($url, ['headers'=>$headers, 'body'=>$body]);
         } else {
-            $request = \Httpful\Request::delete($url)
-                ->addHeaders($header)
-                ->send();
+            $request = $this->client->delete($url, ['headers'=>$headers]);
         }
 
         return $this->formatResponse($request);
@@ -130,8 +121,8 @@ class Httpful implements HTTPInterface
             $response->error = true;
         }
 
-        $response->status = $request->code;
-        $response->headers = $request->headers;
+        $response->status = $request->getStatusCode();
+        $response->headers = $request->getHeaders();
         $response->adapter = $request;
 
         return $response;
