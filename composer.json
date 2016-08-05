@@ -28,7 +28,6 @@
             "homepage": "http://rxnlabs.com"
         }
     ],
-    "minimum-stability": "dev",
     "autoload": {
         "psr-4": {
             "Caspio\\": "src/"
